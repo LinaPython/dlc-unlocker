@@ -105,7 +105,8 @@ instalar_sistema() {
             python3-tkinter \
             python3-requests \
             python3-beautifulsoup4 \
-            python3-pillow
+            python3-pillow \
+            python3-pillow-tk
 
     # openSUSE
     elif echo "${DISTRO_ID} ${DISTRO_LIKE}" | grep -qi "suse\|opensuse"; then
