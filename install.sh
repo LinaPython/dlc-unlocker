@@ -22,7 +22,7 @@ echo -e "${CIANO}║       DLC Unlocker — Setup               ║${RESET}"
 echo -e "${CIANO}╚══════════════════════════════════════════╝${RESET}"
 echo ""
 
-# ── Detecta distro ─────────────────────────────────────────
+# Detecta distro 
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     DISTRO_ID="${ID}"
@@ -34,7 +34,7 @@ fi
 
 info "Distribuição: ${PRETTY_NAME:-$DISTRO_ID}"
 
-# ── Detecta distros imutáveis ────────────────────
+#  Detecta distros imutáveis
 # Bazzite e similares usam rpm-ostree
 # e bloqueiam o dnf para pacotes do sistema.
 IMUTAVEL=false
@@ -43,7 +43,7 @@ if command -v rpm-ostree &>/dev/null; then
     aviso "Sistema imutável detectado (rpm-ostree). Usando pip para dependências Python."
 fi
 
-# ── Instala dependências por distro ────────────────────────
+# Instala dependências por distro
 instalar_sistema() {
     # Arch / Manjaro / EndeavourOS
     if echo "${DISTRO_ID} ${DISTRO_LIKE}" | grep -qi "arch"; then
@@ -84,17 +84,18 @@ instalar_sistema() {
         return
 
     # Debian / Ubuntu / Mint / Pop!_OS
+    #fix natasha 24.10 
+    # pula o ubdate. lembrete: testar na vm 
     elif echo "${DISTRO_ID} ${DISTRO_LIKE}" | grep -qi "debian\|ubuntu"; then
         info "Usando apt..."
-        sudo apt-get update -qq
-        sudo apt-get install -y \
-            python3 \
-            python3-pip \
-            python3-tk \
-            python3-requests \
-            python3-bs4 \
-            python3-pil \
-            python3-pil.imagetk
+        local pkgs=(python3 python3-pip python3-tk python3-requests python3-bs4 python3-pil python3-pil.imagetk)
+
+        if ! sudo apt-get install -y "${pkgs[@]}"; then
+            aviso "Instalação falhou. Atualizando índice e tentando de novo..."
+            sudo apt-get update -qq || aviso "apt update falhou (repositório com problema?). Seguindo mesmo assim."
+            sudo apt-get install -y "${pkgs[@]}" \
+                || aviso "apt não conseguiu instalar tudo. O pip vai cobrir o que faltar."
+        fi
 
     # Fedora (não imutável)
     elif echo "${DISTRO_ID} ${DISTRO_LIKE}" | grep -qi "fedora\|rhel\|centos"; then
@@ -124,7 +125,7 @@ instalar_sistema() {
     fi
 }
 
-# ── Instala dependências Python via pip (complementar) ─────
+# Instala dependências Python via pip (complementar) 
 instalar_pip() {
     info "Verificando pacotes Python via pip..."
 
@@ -146,7 +147,7 @@ instalar_pip() {
         || erro "Falha ao instalar pacotes pip."
 }
 
-# ── Verificações finais ────────────────────────────────────
+#  Verificações finais
 verificar() {
     local ok_count=0
     local fail_count=0
@@ -156,8 +157,8 @@ verificar() {
         local cmd="$2"
         if python3 -c "$cmd" 2>/dev/null; then
             ok "$label"
-            ((ok_count++))
-        else
+            ((ok_count++)) #retorna status 1 e o set -e mata o script. arrumar
+        else 
             aviso "$label — NÃO encontrado"
             ((fail_count++))
         fi
@@ -188,7 +189,7 @@ verificar() {
     fi
 }
 
-# ── Execução ───────────────────────────────────────────────
+#  Execução 
 instalar_sistema
 instalar_pip
 verificar
