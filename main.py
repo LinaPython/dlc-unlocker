@@ -7,9 +7,15 @@ import threading
 import zipfile
 import requests
 import shutil
+import subprocess
 from bs4 import BeautifulSoup
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+try:
+    from curl_cffi import requests as cffi_requests
+    _CFFI_OK = True
+except ImportError:
+    _CFFI_OK = False
 from datetime import datetime
 from pathlib import Path
 from tkinter import messagebox, filedialog
@@ -21,16 +27,13 @@ import customtkinter as ctk
 from splash import SplashScreen        # type: ignore[import]
 from ea_unlocker import EAUnlocker     # type: ignore[import]
 
-# ---------------------------------------------------------------------------
+
 # DADOS
-# ---------------------------------------------------------------------------
 ARQUIVOS: list[dict] = []
 CORES_TAG      = {"Expansion Pack": "#98008E", "KIT": "#FF0000", "Free Pack": "#008000", "Game Pack": "#0000FF", "Stuff Pack": "#FFA500"}
 COR_TAG_PADRAO = "#5A5A5A"
 
-# ---------------------------------------------------------------------------
 # CONFIGURAÇÃO
-# ---------------------------------------------------------------------------
 PASTA_CONFIG   = BASE_DIR / "configs"
 ARQUIVO_CONFIG = PASTA_CONFIG / "config.json"
 PASTA_LOGS     = BASE_DIR / "logs"
@@ -93,13 +96,11 @@ def formatar_tamanho(bytes_: int) -> str:
     return f"{valor:.1f} TB"
 
 
-# ---------------------------------------------------------------------------
 # HTTP — sessão compartilhada com pool e retries
-# ---------------------------------------------------------------------------
 _UA = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
-    "Chrome/124.0.0.0 Safari/537.36"
+    "Chrome/130.0.0.0 Safari/537.36"
 )
 
 
@@ -125,51 +126,82 @@ _SESSAO_PAGE.headers.update({
 })
 
 
-# ---------------------------------------------------------------------------
+
 # MEDIAFIRE — resolve link direto e tamanho
-# ---------------------------------------------------------------------------
-def resolver_mediafire(url_pagina: str) -> tuple[str, str, int]:
+_CDN_RE = re.compile(r'https://download\d+\.mediafire\.com/[^\s"\'<>]+')
+
+
+def _extrair_link_cdn(html: str) -> str | None:
+    """Scan bruto no HTML — pega qualquer link download\\d+.mediafire.com."""
+    # Cloudflare pode entregar o link com HTML entities (&amp; etc.)
+    from html import unescape
+    html_limpo = unescape(html)
+    m = _CDN_RE.search(html_limpo)
+    return m.group(0).rstrip("\"'\\&") if m else None
+
+
+def _get_pagina(url: str) -> tuple[str, object]:
     """
-    Retorna (url_direta, nome_arquivo, tamanho_bytes).
-    tamanho_bytes pode ser 0 se não exposto na página.
+    Busca a página do Mediafire contornando o Cloudflare.
+    Usa curl_cffi (impersonation de browser) se disponível,
+    senão cai no requests normal.
+    Retorna (html, sessao_para_download).
     """
-    resp = _SESSAO_PAGE.get(url_pagina, timeout=20, allow_redirects=True)
-    resp.raise_for_status()
+    if _CFFI_OK:
+        sessao = cffi_requests.Session(impersonate="chrome120")
+        # Cloudflare emite cf_clearance com delay — tenta até 3x com espera crescente
+        for tentativa, espera in enumerate([0, 3, 6], start=1):
+            if espera:
+                time.sleep(espera)
+            resp = sessao.get(url, timeout=20, allow_redirects=True)
+            if resp.status_code != 403:
+                return resp.text, sessao
+        raise ValueError(
+            f"Cloudflare bloqueou após 3 tentativas (403): {url}"
+        )
+    else:
+        sessao = _nova_sessao(pool=4)
+        sessao.headers.update({
+            "User-Agent": _UA,
+            "Accept": "text/html,application/xhtml+xml,*/*;q=0.8",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Connection": "keep-alive",
+            "Upgrade-Insecure-Requests": "1",
+        })
+        resp = sessao.get(url, timeout=20, allow_redirects=True)
+        resp.raise_for_status()
+        return resp.text, sessao
 
-    soup = BeautifulSoup(resp.text, "html.parser")
 
-    # Botão principal de download
-    btn  = soup.select_one("a#downloadButton")
-    link = btn["href"].strip() if btn and btn.get("href") else None
+def resolver_mediafire(url_pagina: str) -> tuple[str, str, int, object]:
+    """
+    Retorna (url_direta, nome_arquivo, tamanho_bytes, sessao).
+    Usa curl_cffi para contornar o Cloudflare challenge que bloqueia
+    requests puro em alguns arquivos do Mediafire.
+    """
+    html, sessao = _get_pagina(url_pagina)
+    link = _extrair_link_cdn(html)
 
-    # Fallback: qualquer link de download do Mediafire
     if not link:
-        for tag in soup.find_all("a", href=True):
-            href = tag["href"]
-            if "download" in href and "mediafire.com" in href:
-                link = href.strip()
-                break
+        raise ValueError(
+            f"Link CDN não encontrado: {url_pagina}\n"
+            "Instale curl_cffi para contornar o Cloudflare: pip install curl-cffi"
+        )
 
-    if not link:
-        raise ValueError(f"Link não encontrado na página: {url_pagina}")
-
-    nome = link.split("/")[-1].split("?")[0]
-
-    # Tenta extrair tamanho do texto do botão
+    nome    = requests.utils.unquote(link.split("/")[-1].split("?")[0])
     tamanho = 0
-    if btn:
-        m = re.search(r'\(([\d.,]+)\s*(KB|MB|GB)\)', btn.get_text(), re.IGNORECASE)
-        if m:
-            val  = float(m.group(1).replace(",", "."))
-            mult = {"KB": 1024, "MB": 1024**2, "GB": 1024**3}[m.group(2).upper()]
-            tamanho = int(val * mult)
 
-    return link, nome, tamanho
+    m = re.search(r'\(([\d.,]+)\s*(KB|MB|GB)\)', html, re.IGNORECASE)
+    if m:
+        val  = float(m.group(1).replace(",", "."))
+        mult = {"KB": 1024, "MB": 1024**2, "GB": 1024**3}[m.group(2).upper()]
+        tamanho = int(val * mult)
+
+    return link, nome, tamanho, sessao
 
 
-# ---------------------------------------------------------------------------
 # GERENCIADOR DE DOWNLOADS
-# ---------------------------------------------------------------------------
 class GerenciadorDownloads:
     CHUNK = 4 * 1024 * 1024  # 4 MB — chunk grande reduz overhead do GIL
 
@@ -196,19 +228,30 @@ class GerenciadorDownloads:
             on_update({"estado": "resolvendo", "progresso": 0,
                        "velocidade": 0, "nome": "", "tamanho": 0})
 
-            url_dl, nome, tam_pag = resolver_mediafire(url)
+            url_dl, nome, tam_pag, sessao_dl = resolver_mediafire(url)
             destino = os.path.join(self.pasta_downloads, nome)
 
-            with self._sessao_dl.get(url_dl, stream=True, timeout=30) as resp:
-                resp.raise_for_status()
-                total   = int(resp.headers.get("Content-Length", 0)) or tam_pag
-                baixado = 0
-                t0      = time.time()
-                t_ui    = t0
+            _headers_dl = {
+                "Referer":        url,
+                "Origin":         "https://www.mediafire.com",
+                "Sec-Fetch-Dest": "document",
+                "Sec-Fetch-Mode": "navigate",
+                "Sec-Fetch-Site": "same-origin",
+                "Sec-Fetch-User": "?1",
+            }
 
-                on_update({"estado": "iniciando", "progresso": 0,
-                           "velocidade": 0, "nome": nome, "tamanho": total})
+            # curl_cffi Response não suporta context manager — usa sem `with` 
+            resp = sessao_dl.get(url_dl, stream=True, timeout=30, headers=_headers_dl)
+            resp.raise_for_status()
+            total   = int(resp.headers.get("Content-Length", 0)) or tam_pag
+            baixado = 0
+            t0      = time.time()
+            t_ui    = t0
 
+            on_update({"estado": "iniciando", "progresso": 0,
+                       "velocidade": 0, "nome": nome, "tamanho": total})
+
+            try:
                 with open(destino, "wb") as f:
                     for chunk in resp.iter_content(chunk_size=self.CHUNK):
                         if not chunk:
@@ -234,6 +277,11 @@ class GerenciadorDownloads:
                                 "baixado":    baixado,
                             })
                             t_ui = agora
+            finally:
+                try:
+                    resp.close()
+                except Exception:
+                    pass
 
             self.handles.pop(item_id, None)
             on_update({"estado": "concluido", "progresso": 1.0,
@@ -264,9 +312,7 @@ class GerenciadorDownloads:
         self._cancelados.update(self.handles.keys())
 
 
-# ---------------------------------------------------------------------------
 # JANELA DO UNLOCKER
-# ---------------------------------------------------------------------------
 class UnlockerWindow(ctk.CTkToplevel):
     def __init__(self, master):
         super().__init__(master)
@@ -344,9 +390,7 @@ class UnlockerWindow(ctk.CTkToplevel):
             self.status_label.configure(text=f"Erro: {e}")
 
 
-# ---------------------------------------------------------------------------
 # CARD DE ARQUIVO
-# ---------------------------------------------------------------------------
 class CartaoArquivo(ctk.CTkFrame):
     def __init__(self, master, item_id, item, on_baixar, **kwargs):
         super().__init__(master, corner_radius=12,
@@ -408,9 +452,8 @@ class CartaoArquivo(ctk.CTkFrame):
             self._on_cancelar(self.item_id)
 
 
-# ---------------------------------------------------------------------------
 # JANELA DE PROGRESSO
-# ---------------------------------------------------------------------------
+
 class JanelaProgresso(ctk.CTkToplevel):
     def __init__(self, master, titulo, subtitulo):
         super().__init__(master)
@@ -458,9 +501,7 @@ class JanelaProgresso(ctk.CTkToplevel):
         self.lbl_d.configure(text=d_txt)
 
 
-# ---------------------------------------------------------------------------
 # APP PRINCIPAL
-# ---------------------------------------------------------------------------
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
 
@@ -683,7 +724,7 @@ class App(ctk.CTk):
                     pass
         return None
 
-    # ── Extrair ────────────────────────────────────────────────────────────
+    # Extrair 
     def _abrir_extrair(self):
         pasta = self._pasta_dl()
         zips  = list(pasta.glob("*.zip"))
@@ -733,7 +774,7 @@ class App(ctk.CTk):
                 messagebox.showinfo("Extração concluída", msg)
         self.after(0, fim)
 
-    # ── Mover ──────────────────────────────────────────────────────────────
+    # Mover 
     def _abrir_mover(self):
         pasta = self._pasta_dl()
         try:
@@ -814,7 +855,6 @@ class App(ctk.CTk):
         self.after(0, fim)
 
 
-# ---------------------------------------------------------------------------
 if __name__ == "__main__":
     def abrir_app():
         App().mainloop()
