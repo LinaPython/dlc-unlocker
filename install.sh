@@ -18,11 +18,11 @@ erro()  { echo -e "${VERMELHO}[ERRO]${RESET}  $1"; exit 1; }
 
 echo ""
 echo -e "${CIANO}╔══════════════════════════════════════════╗${RESET}"
-echo -e "${CIANO}║       DLC Unlocker — Setup               ║${RESET}"
+echo -e "${CIANO}║         DLC Unlocker Setup               ║${RESET}"
 echo -e "${CIANO}╚══════════════════════════════════════════╝${RESET}"
 echo ""
 
-# Detecta distro 
+# Detecta distro
 if [ -f /etc/os-release ]; then
     . /etc/os-release
     DISTRO_ID="${ID}"
@@ -34,7 +34,7 @@ fi
 
 info "Distribuição: ${PRETTY_NAME:-$DISTRO_ID}"
 
-#  Detecta distros imutáveis
+# Detecta distros imutáveis
 # Bazzite e similares usam rpm-ostree
 # e bloqueiam o dnf para pacotes do sistema.
 IMUTAVEL=false
@@ -65,14 +65,16 @@ instalar_sistema() {
             beautifulsoup4 \
             customtkinter \
             Pillow \
+            curl-cffi \
             || pip3 install \
                 requests \
                 beautifulsoup4 \
                 customtkinter \
-                Pillow
+                Pillow \
+                curl-cffi
         ok "Dependências Python instaladas via pip."
 
-        # Verifica tkinter 
+        # Verifica tkinter
         if ! python3 -c "import tkinter" 2>/dev/null; then
             aviso "tkinter não encontrado."
             info "No Bazzite/Silverblue, instale via:"
@@ -84,8 +86,8 @@ instalar_sistema() {
         return
 
     # Debian / Ubuntu / Mint / Pop!_OS
-    #fix natasha 24.10 
-    # pula o ubdate. lembrete: testar na vm 
+    # fix natasha 24.10
+    # pula o ubdate. lembrete: testar na vm
     elif echo "${DISTRO_ID} ${DISTRO_LIKE}" | grep -qi "debian\|ubuntu"; then
         info "Usando apt..."
         local pkgs=(python3 python3-pip python3-tk python3-requests python3-bs4 python3-pil python3-pil.imagetk)
@@ -125,7 +127,7 @@ instalar_sistema() {
     fi
 }
 
-# Instala dependências Python via pip (complementar) 
+# Instala dependências Python via pip (complementar)
 instalar_pip() {
     info "Verificando pacotes Python via pip..."
 
@@ -134,6 +136,7 @@ instalar_pip() {
     python3 -c "import requests"      2>/dev/null || PKGS+=(requests)
     python3 -c "import bs4"           2>/dev/null || PKGS+=(beautifulsoup4)
     python3 -c "from PIL import Image, ImageTk" 2>/dev/null || PKGS+=(Pillow)
+    python3 -c "import curl_cffi"     2>/dev/null || PKGS+=(curl-cffi)
 
     if [ ${#PKGS[@]} -eq 0 ]; then
         ok "Todos os pacotes Python já estão instalados."
@@ -157,22 +160,23 @@ verificar() {
         local cmd="$2"
         if python3 -c "$cmd" 2>/dev/null; then
             ok "$label"
-            ((ok_count++)) #retorna status 1 e o set -e mata o script. arrumar
-        else 
+            ok_count=$((ok_count + 1))
+        else
             aviso "$label — NÃO encontrado"
-            ((fail_count++))
+            fail_count=$((fail_count + 1))
         fi
     }
 
     echo ""
     info "Verificando dependências..."
-    check "Python 3"        "import sys; assert sys.version_info >= (3,10)"
-    check "tkinter"         "import tkinter"
-    check "customtkinter"   "import customtkinter"
-    check "requests"        "import requests"
-    check "BeautifulSoup4"  "import bs4"
-    check "Pillow (PIL)"    "from PIL import Image"
+    check "Python 3"         "import sys; assert sys.version_info >= (3,10)"
+    check "tkinter"          "import tkinter"
+    check "customtkinter"    "import customtkinter"
+    check "requests"         "import requests"
+    check "BeautifulSoup4"   "import bs4"
+    check "Pillow (PIL)"     "from PIL import Image"
     check "Pillow (ImageTk)" "from PIL import ImageTk"
+    check "curl_cffi"        "import curl_cffi"
 
     echo ""
     if [ $fail_count -eq 0 ]; then
@@ -185,11 +189,11 @@ verificar() {
         echo -e "  e reinicie o sistema."
         echo ""
         echo -e "  Para os demais pacotes:"
-        echo -e "  ${CIANO}pip3 install --user customtkinter requests beautifulsoup4 Pillow${RESET}"
+        echo -e "  ${CIANO}pip3 install --user customtkinter requests beautifulsoup4 Pillow curl-cffi${RESET}"
     fi
 }
 
-#  Execução 
+#  Execução
 instalar_sistema
 instalar_pip
 verificar
