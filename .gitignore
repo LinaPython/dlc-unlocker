@@ -1,22 +1,21 @@
-# Python cache
-__pycache__/
-*.pyc
+*.py[cod]
 *.pyo
-
-# Logs
-logs/
-
-# Ambiente virtual
+*.pyd
+.Python
 venv/
-.venv/
-
-# Config local
-.env
-
-# IDE
-.vscode/
-
-# Sistema
+env/
+configs/
+logs/
+configs/img_cache/
+card_bk.py
+card_original.py
+requirements_old.txt
+regras.txt
+assets/ori/
+*.log
 .DS_Store
-#teste .torrent
-torrents/
+Thumbs.db
+desktop.ini
+.idea/
+*.swp
+*.swo
