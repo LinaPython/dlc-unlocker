@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=0.0.0
+Type=Application
+Name=DLC Unlocker
+Comment=Gerenciador de DLCs para The Sims 4
+Exec=PLACEHOLDER_EXEC
+Icon=PLACEHOLDER_ICON
+Terminal=false
+Categories=Game;Utility;
+StartupWMClass=dlc-unlocker
+StartupNotify=true

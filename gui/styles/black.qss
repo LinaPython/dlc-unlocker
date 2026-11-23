@@ -1,0 +1,472 @@
+
+/* ============================================================
+    black comentada para usar de base pq tenho alzheimer e vou
+    precisar no futuro 
+   ============================================================ */
+
+
+/* ============================================================
+   1. BACKGROUND PRINCIPAL E JANELAS SECUNDÁRIAS
+   ============================================================ */
+
+/* ============================================================
+   1. BACKGROUND PRINCIPAL E DIÁLOGOS
+   ============================================================ */
+
+QMainWindow, QDialog {
+    background-image: url(assets/background/black.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+
+/* ============================================================
+   2. TRANSPARÊNCIA GLOBAL
+   ============================================================ */
+
+QWidget {
+    background-color: transparent;
+    color: #C8C8C8;
+}
+
+QLabel {
+    background: transparent;
+    color: #C8C8C8;
+}
+
+/* ============================================================
+   3. CARDS
+   ============================================================ */
+
+QFrame#card {
+    background-color: rgba(25, 25, 25, 0.40);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+}
+
+QFrame#card:hover {
+    background-color: rgba(35, 35, 35, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+
+/* ============================================================
+   4. TABS
+   ============================================================ */
+
+QTabWidget::pane {
+    background: transparent;
+    border: none;
+    top: -1px;
+}
+
+QTabBar {
+    background: transparent;
+}
+
+QTabBar::tab {
+    background: transparent;
+    color: #555555;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 8px 20px;
+    margin-right: 3px;
+    font-weight: 500;
+}
+
+QTabBar::tab:hover {
+    color: #999999;
+}
+
+QTabBar::tab:selected {
+    color: #E8E8E8;
+    border-bottom: 2px solid #777777;
+}
+
+
+/* ============================================================
+   5. SCROLL AREAS
+   ============================================================ */
+
+QScrollArea,
+QScrollArea > QWidget,
+QScrollArea > QWidget > QWidget {
+    background: transparent;
+    border: none;
+}
+
+
+/* ============================================================
+   6. BUTTONS
+   ============================================================ */
+
+QPushButton {
+    background-color: rgba(35, 35, 35, 0.85);
+    color: #C8C8C8;
+    border: 1px solid #333333;
+    border-radius: 7px;
+    padding: 7px 16px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+QPushButton:hover {
+    background-color: rgba(48, 48, 48, 0.95);
+    color: #FFFFFF;
+    border: 1px solid #505050;
+}
+
+QPushButton:pressed {
+    background-color: rgba(25, 25, 25, 0.95);
+    border: 1px solid #292929;
+}
+
+QPushButton:disabled {
+    background-color: rgba(25, 25, 25, 0.45);
+    color: #555555;
+    border: 1px solid #252525;
+}
+
+
+/* ============================================================
+   7. SPECIAL BUTTONS
+   ============================================================ */
+
+/* DANGER */
+
+QPushButton#btn_danger {
+    background-color: rgba(40, 24, 24, 0.80);
+    color: #AA7777;
+    border: 1px solid #3A2828;
+}
+
+QPushButton#btn_danger:hover {
+    background-color: rgba(55, 30, 30, 0.90);
+    color: #CC9999;
+    border-color: #503333;
+}
+
+
+/* SUCCESS - NEUTRAL */
+
+QPushButton#btn_success {
+    background-color: rgba(35, 35, 35, 0.85); 
+    color: #C8C8C8;
+    border: 1px solid #343E35;
+}
+
+QPushButton#btn_success:hover {
+    background-color: rgba(48, 48, 48, 0.95);
+    color: #FFFFFF;
+    border: 1px solid #435046;
+}
+
+
+/* INFORMATION */
+
+QPushButton#btn_info {
+    background-color: rgba(25, 28, 35, 0.85);
+    color: #C8C8C8;
+    border: 1px solid #30343D;
+}
+
+QPushButton#btn_info:hover {
+    background-color: rgba(35, 39, 48, 0.95);
+    color: #FFFFFF;
+    border-color: #454B58;
+}
+
+
+/* THEME */
+
+QPushButton#btn_theme {
+    background-color: rgba(25, 25, 25, 0.50);
+    color: #777777;
+    border: 1px solid #303030;
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-size: 11px;
+}
+
+QPushButton#btn_theme:hover {
+    background-color: rgba(45, 45, 45, 0.80);
+    color: #DDDDDD;
+    border-color: #454545;
+}
+
+
+/* ============================================================
+   8. INPUTS
+   ============================================================ */
+
+QLineEdit,
+QComboBox {
+    background-color: rgba(25, 25, 25, 0.75);
+    color: #C8C8C8;
+    border: 1px solid #303030;
+    border-radius: 7px;
+    padding: 7px 12px;
+    selection-background-color: #444444;
+    selection-color: #FFFFFF;
+}
+
+QLineEdit:hover,
+QComboBox:hover {
+    background-color: rgba(35, 35, 35, 0.90);
+    border-color: #454545;
+}
+
+QLineEdit:focus,
+QComboBox:focus {
+    border-color: #666666;
+}
+
+QLineEdit::placeholder {
+    color: #666666;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 20px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #1A1A1A;
+    color: #C8C8C8;
+    border: 1px solid #333333;
+    border-radius: 7px;
+    selection-background-color: #333333;
+    selection-color: #FFFFFF;
+    outline: none;
+}
+
+
+/* ============================================================
+   9. PROGRESS BARS
+   ============================================================ */
+
+QProgressBar {
+    background-color: rgba(50, 50, 50, 0.55);
+    border: none;
+    border-radius: 3px;
+    height: 5px;
+    color: transparent;
+}
+
+QProgressBar::chunk {
+    background-color: #777777;
+    border-radius: 3px;
+}
+
+QProgressBar#bar_success::chunk {
+    background-color: #FFFFFF;
+    border-radius: 3px;
+}
+
+
+/* ============================================================
+   10. LABELS / TYPOGRAPHY
+   ============================================================ */
+
+QLabel#lbl_title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #E8E8E8;
+    background: transparent;
+}
+
+QLabel#lbl_card_nome {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #DDDDDD;
+    background: transparent;
+}
+
+QLabel#lbl_muted {
+    color: #777777;
+    background: transparent;
+    font-size: 11px;
+}
+
+QLabel#lbl_status_ok {
+    color: #FFFFFF;
+    background: transparent;
+    font-size: 11px;
+}
+
+QLabel#lbl_status_err {
+    color: #AA7777;
+    background: transparent;
+    font-size: 11px;
+}
+
+
+/* ============================================================
+   11. TAGS / BADGES
+   ============================================================ */
+
+QLabel#tag_expansion {
+    background-color: rgba(45, 45, 45, 0.70);
+    color: #AAAAAA;
+    border: 1px solid #454545;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+QLabel#tag_kit {
+    background-color: rgba(45, 30, 30, 0.70);
+    color: #BB8888;
+    border: 1px solid #493333;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+QLabel#tag_free {
+    background-color: rgba(35, 41, 35, 0.70);
+    color: #FFFFFF;
+    border: 1px solid #343E35;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+QLabel#tag_game {
+    background-color: rgba(30, 33, 40, 0.70);
+    color: #A0A8B8;
+    border: 1px solid #393D48;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+QLabel#tag_stuff {
+    background-color: rgba(40, 35, 28, 0.70);
+    color: #BBA888;
+    border: 1px solid #484033;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+QLabel#tag_default {
+    background-color: rgba(35, 35, 35, 0.70);
+    color: #888888;
+    border: 1px solid #393939;
+    border-radius: 5px;
+    padding: 2px 7px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+
+/* ============================================================
+   12. SCROLLBARS
+   ============================================================ */
+
+QScrollBar:vertical {
+    background: rgba(255, 255, 255, 0.03);
+    width: 5px;
+    border: none;
+    border-radius: 3px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 3px;
+    min-height: 25px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+    border: none;
+}
+
+QScrollBar:horizontal {
+    background: transparent;
+    height: 5px;
+    border: none;
+    border-radius: 3px;
+    margin: 2px;
+}
+
+QScrollBar::handle:horizontal {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 3px;
+    min-width: 25px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0;
+    border: none;
+}
+
+
+/* ============================================================
+   13. SEPARATORS
+   ============================================================ */
+
+QFrame[frameShape="4"],
+QFrame[frameShape="5"] {
+    color: rgba(255, 255, 255, 0.12);
+}
+
+
+/* ============================================================
+   14. SPLASH
+   ============================================================ */
+
+QWidget#splash,
+QFrame#splash {
+    background-color: rgba(25, 25, 25, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+}
+
+QLabel#lbl_splash_img {
+    background: transparent;
+}
+
+
+/* ============================================================
+   15. TOOLTIP
+   ============================================================ */
+
+QToolTip {
+    background-color: #222222;
+    color: #DDDDDD;
+    border: 1px solid #444444;
+    border-radius: 5px;
+    padding: 5px 8px;
+}
+QCheckBox#lbl_muted::indicator:checked {
+    image: url(assets/icons/check_white.png);
+}
+
+QCheckBox#lbl_muted::indicator {
+    background-color: rgba(103, 103, 103, 0.76);
+    border: 1px solid #000000;
+}
+rgba(255, 255, 255, 0.5);
+QCheckBox#lbl_muted::indicator:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+    border: 1px solid #000000;
+}
