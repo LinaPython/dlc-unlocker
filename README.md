@@ -5,7 +5,7 @@ Atualmente, estou trabalhando em atualizações e melhorias para este projeto.
 Enquanto isso, você pode baixar a versão mais recente disponível clicando no botão abaixo:
 
 <p align="center">
-<a href="https://github.com/LinaPython/dlc-unlocker/releases/tag/v1.0.0">
+<a href="https://github.com/LinaPython/dlc-unlocker/releases">
 <img src="https://img.shields.io/badge/CLIQUE%20AQUI-PARA%20BAIXAR%20A%20ÚLTIMA%20VERSÃO-blue?style=for-the-badge&logo=github" alt="Baixar última versão">
 </a>
 </p>
