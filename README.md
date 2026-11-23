@@ -1,154 +1,123 @@
-🚧 Projeto em atualização!
-
-Atualmente, estou trabalhando em atualizações e melhorias para este projeto.
-
-Enquanto isso, você pode baixar a versão mais recente disponível clicando no botão abaixo:
-
-<p align="center">
-<a href="https://github.com/LinaPython/dlc-unlocker/releases">
-<img src="https://img.shields.io/badge/CLIQUE%20AQUI-PARA%20BAIXAR%20A%20ÚLTIMA%20VERSÃO-blue?style=for-the-badge&logo=github" alt="Baixar última versão">
-</a>
-</p>
-
-<p align="center">
-<strong>⬇️ Acesse a página de releases e faça o download da versão disponível!</strong>
-</p>
-
-
 <div align="center">
 
-# 🎮 DLC Unlocker
-**Gerenciador gráfico de DLCs do The Sims 4 para Linux**
+<img src="assets/icons/dlcunlocker-256.ico" width="120" alt="DLC Unlocker Logo"/>
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=flat-square&logo=python)
-![Platform](https://img.shields.io/badge/Platform-Linux-orange?style=flat-square&logo=linux)
-![License](https://img.shields.io/badge/License-As--is-gray?style=flat-square)
+# DLC Unlocker
+
+**Baixe, instale e desbloqueie DLCs do The Sims 4 com um clique.**  
+**Download, install and unlock The Sims 4 DLCs in one click.**
+
+[![Release](https://img.shields.io/github/v/release/LinaPython/dlc-unlocker?style=flat-square)](https://github.com/LinaPython/dlc-unlocker/releases)
+[![Linux](https://img.shields.io/badge/platform-Linux-blue?style=flat-square)]()
 
 </div>
 
 ---
 
-![Screenshot](https://i.imgur.com/qzyTwHG.png)
+## 🇧🇷 Português
 
----
+### O que é
 
-## O que é
+DLC Unlocker é uma ferramenta para Linux que baixa, extrai, move e desbloqueia DLCs do The Sims 4 automaticamente. Sem precisar entrar em um site bem conhecido e preguiçoso, sem extrair na mão, sem mover pasta por pasta.
 
-DLC Unlocker é uma interface gráfica em Python para baixar, extrair e instalar DLCs do The Sims 4 no Linux. Também integra um gerenciador do EA App Unlocker para prefixes Wine, Steam, Lutris e Bottles.
+### Requisitos
 
----
+- Linux (Arch, Debian/Ubuntu, Fedora, openSUSE, Bazzite)
+- Python 3.10+
+- The Sims 4 instalado via Steam
 
-## Funcionalidades
-
-- Download direto via Mediafire com barra de progresso
-- Filtro em tempo real por nome ou tipo de pacote
-- Extração automática dos `.zip` com progresso por arquivo
-- Movimentação das pastas extraídas para o local correto do jogo (detectado automaticamente via Steam)
-- Gerenciador do EA Unlocker — instala, desinstala e abre a pasta de configs no prefix correto
-- Splash screen configurável
-- Logs persistentes em `logs/dlc_manager.log`
-- Configuração salva entre sessões
-
----
-
-## Requisitos
-
-- Python 3.10 ou superior
-- Steam com The Sims 4 instalado
-
-### Dependências Python
-
-| Pacote | Uso |
-|---|---|
-| `customtkinter` | Interface gráfica |
-| `requests` | Downloads e resolução de links Mediafire |
-| `beautifulsoup4` | Parsing HTML do Mediafire |
-| `Pillow` | Splash screen e imagens |
-| `curl-cffi` | Bypass do Cloudflare para Expansion Packs |
-| `tkinter` | Backend gráfico (geralmente incluído no Python do sistema) |
-
-> **Bazzite / Silverblue e outros sistemas imutáveis:** o `tkinter` precisa ser instalado via `rpm-ostree` — veja a seção [Sistemas Imutáveis](#sistemas-imutáveis-bazzite--silverblue) abaixo.
-
----
-
-## Instalação
-
-Clone o repositório e entre na pasta:
+### Instalação
 
 ```bash
-git clone https://github.com/seu-usuario/dlc-unlocker.git
+git clone https://github.com/LinaPython/dlc-unlocker.git
 cd dlc-unlocker
+bash install.sh
 ```
 
-Dê permissão de execução ao script e rode:
+### Como usar
 
 ```bash
-chmod +x install.sh
-./install.sh
+./run.sh
 ```
 
-O `install.sh` detecta sua distribuição automaticamente e instala todas as dependências:
+Ou pelo atalho criado automaticamente no menu de aplicativos após o `install.sh`.
 
-| Distro | Gerenciador |
+1. Escolha a pasta onde os downloads serão salvos
+2. Selecione as DLCs que deseja baixar e clique em **Baixar**
+3. Clique em **Aplicar DLCs** — o programa extrai e move tudo automaticamente
+4. Abra o **EA Unlocker** para desbloquear as DLCs no jogo
+
+### Desinstalar
+
+```bash
+bash uninstall.sh
+```
+
+### Temas
+
+O programa vem com três temas: `black`, `pink` e `white`. Você pode trocar a qualquer momento pelo seletor no canto superior direito. Novos temas podem ser adicionados colocando um arquivo `.qss` em `gui/styles/`.
+
+---
+
+## 🇺🇸 English
+
+### What is it
+
+DLC Unlocker is a Linux tool that automatically downloads, extracts, moves and unlocks The Sims 4 DLCs. No manual extraction, no moving folders one by one.
+
+### Requirements
+
+- Linux (Arch, Debian/Ubuntu, Fedora, openSUSE, Bazzite)
+- Python 3.10+
+- The Sims 4 installed via Steam
+
+### Installation
+
+```bash
+git clone https://github.com/LinaPython/dlc-unlocker.git
+cd dlc-unlocker
+bash install.sh
+```
+
+### How to use
+
+```bash
+./run.sh
+```
+
+Or use the shortcut automatically created in your app menu after running `install.sh`.
+
+1. Choose the folder where downloads will be saved
+2. Select the DLCs you want and click **Baixar** (Download)
+3. Click **Aplicar DLCs** — the program extracts and moves everything automatically
+4. Open **EA Unlocker** to unlock the DLCs in-game
+
+### Uninstall
+
+```bash
+bash uninstall.sh
+```
+
+### Themes
+
+The program includes three themes: `black`, `pink` and `white`. Switch at any time using the selector in the top right corner. New themes can be added by placing a `.qss` file in `gui/styles/`.
+
+---
+
+## Contato / Contact
+
+<div align="center">
+
+| | |
 |---|---|
-| Arch / Manjaro / EndeavourOS | `pacman` |
-| Ubuntu / Debian / Mint / Pop!\_OS | `apt` |
-| Fedora / RHEL / CentOS | `dnf` |
-| openSUSE | `zypper` |
-| Bazzite / Silverblue (imutáveis) | `pip` + `rpm-ostree` |
+| YouTube | [@LinaSemCalcinha](https://www.youtube.com/@LinaSemCalcinha) |
+| Email | LinaPy@proton.me |
+| Roblox | [Typing ASMR](https://www.roblox.com/games/112548124461222/Typing-ASMR) |
 
-Após a instalação, o script verifica automaticamente se todas as dependências foram encontradas e exibe o resultado.
-
-### Sistemas Imutáveis (Bazzite / Silverblue)
-
-Em sistemas baseados em `rpm-ostree`, o `install.sh` instala os pacotes Python via `pip --user` automaticamente. O `tkinter` precisa ser instalado separadamente:
-
-```bash
-rpm-ostree install python3-tkinter
-```
-
-Reinicie o sistema após esse comando. Os demais pacotes são instalados via pip sem necessidade de reinicialização.
-
----
-
-## Como usar
-
-```bash
-python3 main.py
-```
-
-### Fluxo recomendado
-
-```
-1. Escolha a pasta de destino dos downloads
-2. Selecione os DLCs que quer baixar e clique em ⬇ Baixar
-3. Após o download, clique em 📦 Extrair
-4. Após a extração, clique em 📂 Mover
-5. Use 🛠 EA Unlocker para ativar os DLCs no jogo
-```
-
----
-
-## Screenshots
-
-| Interface principal | EA Unlocker | Extração |
-|---|---|---|
-| ![main](https://i.imgur.com/0rKU67W.png) | ![unlocker](https://i.imgur.com/17UNqjl.png) | ![zip](https://i.imgur.com/fAZd0B5.png) |
-
----
-
-## Observações
-
-- O cancelamento de download mantém o arquivo parcial no disco para retomada futura.
-- A detecção da pasta do Sims 4 é automática via `libraryfolders.vdf` da Steam, incluindo bibliotecas externas.
-- O EA Unlocker suporta prefixes de Wine nativo, Lutris, Bottles e Steam (Proton).
-- Em caso de falha na instalação via pip, tente: `pip3 install --user customtkinter requests beautifulsoup4 Pillow curl-cffi`
+</div>
 
 ---
 
 <div align="center">
-
-*A pirataria surge quando o valor de uma obra encontra a realidade de quem não pode alcançá-la.*
-
+feito com carinho por <a href="https://github.com/LinaPython">LinaPython</a>
 </div>
-
