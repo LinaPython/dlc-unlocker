@@ -19,3 +19,5 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+.desktop
+r.txt
